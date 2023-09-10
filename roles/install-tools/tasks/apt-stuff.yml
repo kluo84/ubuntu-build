@@ -18,6 +18,7 @@
       - flameshot
       - exiftool
       - libpcap-dev
+      - default-jre
     state: latest
   become: true
   become_method: sudo
