@@ -1,1 +1,30 @@
+---
+- name: "Install Go tools"
+  hosts: localhost
+  tasks:
+    - name: "Ensure Go is installed"
+      package:
+        name: golang
+        state: present
+
+    - name: "Install Go tool"
+      shell: "GO111MODULE=on go get -v {{ item.value }}"
+      environment:
+        GOPATH: "/usr/local/go/bin/"  # Adjust to your GOPATH if necessary
+      with_dict:
+        subfinder: "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
+        assetfinder: "github.com/tomnomnom/assetfinder@latest"
+        amass: "github.com/OWASP/Amass/v3/...@master"
+        anew: "github.com/tomnomnom/anew@latest"
+        httpx: "github.com/projectdiscovery/httpx/cmd/httpx@latest"
+        katana: "github.com/projectdiscovery/katana/cmd/katana@latest"
+        gf: "github.com/tomnomnom/gf@latest"
+        gau: "github.com/lc/gau/v2/cmd/gau@latest"
+        qsreplace: "github.com/tomnomnom/qsreplace@latest"
+        jsubfinder: "github.com/ThreatUnkown/jsubfinder@latest"
+        dalfox: "github.com/hahwul/dalfox/v2@latest"
+        ffuf: "github.com/ffuf/ffuf@latest"
+        naabu: "github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"
+        nuclei: "github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
+        cent: "github.com/xm1k3/cent@latest"
 
