@@ -3,14 +3,14 @@
   hosts: localhost
   connection: local
   roles:
-    - role: "roles/customize-terminal"
+    - role: "roles/install-tools"
     - role: "roles/configure-tmux"
+    - role: "roles/customize-terminal"
+    - role: "roles/customize-browser"
     - role: "roles/configure-logging"
     - role: "roles/configure-postman"
     - role: "roles/configure-zap"
-    - role: "roles/install-tools"
     - role: "roles/customize-burp"
-    - role: "roles/customize-browser"
     - role: gantsign.visual-studio-code
       users:
         - username: "{{ ansible_user_id }}" 
