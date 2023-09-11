@@ -1,0 +1,20 @@
+---
+- name: Check if Postman is already installed
+  stat:
+    path: /usr/local/bin/postman
+  register: postman_installed
+
+- name: Download Postman installer
+  ansible.builtin.get_url:
+    url: "https://dl-cli.pstmn.io/install/linux64.sh"
+    dest: "/tmp/postman.sh"
+    mode: '0755'   # Modified to make it executable
+  when: not postman_installed.stat.exists
+
+- name: Install Postman
+  command: /tmp/postman.sh
+  args:
+    creates: /usr/local   # This ensures the command is not run if the file/directory already exists
+  when: not postman_installed.stat.exists
+  become: true
+  become_method: sudo
