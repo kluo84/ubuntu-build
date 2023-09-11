@@ -8,6 +8,7 @@
     - { repo: "https://github.com/danielmiessler/SecLists", location: "/opt/SecLists" }
     - { repo: "https://github.com/swisskyrepo/PayloadsAllTheThings", location: "/opt/PayloadsAllTheThings"}
     - { repo: "https://github.com/assetnote/kiterunner", location: "/opt/kiterunner"}
+    - { repo: "https://github.com/s0md3v/XSStrike", location: "/opt/XSStrike"}
   become: true
   become_method: sudo
 

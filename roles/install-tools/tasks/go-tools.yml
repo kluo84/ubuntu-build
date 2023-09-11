@@ -1,51 +1,50 @@
 ---
+- name: Capture current user
+  command: whoami
+  register: current_user
+  become: false
 
-- name: "Ensure Go is installed"
-  shell: |
-    if ! command -v go &>/dev/null; then
-      sudo apt install golang-go -y
-    else
-      echo "Go is already installed"
-    fi
-  args:
-    executable: /bin/bash
-  register: go_installation_result
-  changed_when: "'Go is already installed' not in go_installation_result.stdout"
-  tags: install
+- name: Set GOPATH for current user
+  set_fact:
+    user_gopath: "/home/{{ current_user.stdout }}/go"
 
-- name: "Update Go"
-  shell: |
-    cd ~/Tools/
-    if [ ! -d update-golang ]; then
-      git clone https://github.com/udhos/update-golang
-      cd update-golang
-      sudo ./update-golang.sh
-    else
-      echo "update-golang folder already exists"
-    fi
-  args:
-    executable: /bin/bash
-  register: go_update_result
-  changed_when: "'update-golang folder already exists' not in go_update_result.stdout"
-  tags: update
+- name: Check if Go is installed
+  command: go version
+  ignore_errors: true
+  register: go_version_result
 
-- name: "Install Go tools"
-  shell: "GO111MODULE=on go get -v {{ item.value }}"
+- name: Determine if Go version is less than 1.17 or Go is not installed
+  set_fact:
+    install_go: true
+  when: 
+    - go_version_result.rc != 0
+    - "'go1.16' in go_version_result.stdout or 'go1.15' in go_version_result.stdout or 'go1.14' in go_version_result.stdout"
+
+- name: Remove old Go version
+  command: sudo rm -rf /usr/local/go
+  when: install_go is defined and install_go
+
+- name: Download Go
+  get_url:
+    url: "{{ go_url }}"
+    dest: "/tmp/go1.21.1.linux-amd64.tar.gz"
+  when: install_go is defined and install_go
+
+- name: Install Go
+  shell: tar -C {{ go_install_dir }} -xzf /tmp/go1.21.1.linux-amd64.tar.gz
+  when: install_go is defined and install_go
+
+- name: Set PATH for Go
+  lineinfile:
+    path: /etc/profile
+    line: 'export PATH=$PATH:{{ go_bin_dir }}'
+    state: present
+  when: install_go is defined and install_go
+
+- name: Install Go tools
+  command: "go install -v {{ item.value }}"
+  loop: "{{ tools|dict2items }}"
   environment:
-    GOPATH: "/usr/local/go/bin/"  # Adjust to your GOPATH if necessary
-  with_dict:
-    subfinder: "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
-    assetfinder: "github.com/tomnomnom/assetfinder@latest"
-    amass: "github.com/OWASP/Amass/v3/...@master"
-    anew: "github.com/tomnomnom/anew@latest"
-    httpx: "github.com/projectdiscovery/httpx/cmd/httpx@latest"
-    katana: "github.com/projectdiscovery/katana/cmd/katana@latest"
-    gf: "github.com/tomnomnom/gf@latest"
-    gau: "github.com/lc/gau/v2/cmd/gau@latest"
-    qsreplace: "github.com/tomnomnom/qsreplace@latest"
-    jsubfinder: "github.com/ThreatUnkown/jsubfinder@latest"
-    dalfox: "github.com/hahwul/dalfox/v2@latest"
-    ffuf: "github.com/ffuf/ffuf@latest"
-    naabu: "github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"
-    nuclei: "github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
-    cent: "github.com/xm1k3/cent@latest"
+    GOPATH: "{{ user_gopath }}"
+  become: false  # Ensure the go tools are installed for the user
+  tags: tools
