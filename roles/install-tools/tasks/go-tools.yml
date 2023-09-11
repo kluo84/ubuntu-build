@@ -15,6 +15,22 @@
   shell: go version
   register: go_version_result
   changed_when: False
+  
+- name: "Update Go"
+  shell: |
+    cd ~/Tools/
+    if [ ! -d update-golang ]; then
+      git clone https://github.com/udhos/update-golang
+      cd update-golang
+      sudo ./update-golang.sh
+    else
+      echo "update-golang folder already exists"
+    fi
+  args:
+    executable: /bin/bash
+  register: go_update_result
+  changed_when: "'update-golang folder already exists' not in go_update_result.stdout"
+  tags: update
 
 - name: Ensure Go version is 1.16 or higher
   assert:
