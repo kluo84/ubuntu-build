@@ -1,47 +1,42 @@
 ---
-- name: Ensure Go is installed
-  shell: |
-    if ! command -v go &>/dev/null; then
-      sudo apt update && sudo apt install -y golang-go
-    else
-      echo "Go is already installed"
-    fi
-  args:
-    executable: /bin/bash
-  register: go_installation_result
-  changed_when: "'Go is already installed' not in go_installation_result.stdout"
-
-- name: Check Go Version
-  shell: go version
+- name: Check if Go is installed
+  command: go version
   register: go_version_result
+  ignore_errors: true
   changed_when: False
-  
-- name: "Update Go"
-  shell: |
-    cd ~/Tools/
-    if [ ! -d update-golang ]; then
-      git clone https://github.com/udhos/update-golang
-      cd update-golang
-      sudo ./update-golang.sh
-    else
-      echo "update-golang folder already exists"
-    fi
-  args:
-    executable: /bin/bash
-  register: go_update_result
-  changed_when: "'update-golang folder already exists' not in go_update_result.stdout"
-  tags: update
 
-- name: Ensure Go version is 1.16 or higher
-  assert:
-    that:
-      - "'go1.16' in go_version_result.stdout or 'go1.17' in go_version_result.stdout or 'go1.18' in go_version_result.stdout"
-    fail_msg: "Go version is too low. You need at least Go 1.16 to use the path@version syntax with go install."
+- name: Determine if Go version is less than 1.17
+  set_fact:
+    go_needs_update: true
+  when: 
+    - go_version_result is defined
+    - go_version_result.rc == 0
+    - "'go1.16' in go_version_result.stdout or 'go1.15' in go_version_result.stdout or 'go1.14' in go_version_result.stdout"
+
+- name: Remove old Go version
+  command: sudo rm -rf /usr/local/go
+  when: go_needs_update is defined and go_needs_update
+
+- name: Download and Install Go from official source
+  block:
+    - get_url:
+        url: https://go.dev/dl/go1.21.1.linux-amd64.tar.gz
+        dest: /tmp/go1.21.1.linux-amd64.tar.gz
+        mode: '0755'
+    - shell: sudo tar -C /usr/local -xzf /tmp/go1.21.1.linux-amd64.tar.gz
+  when: go_needs_update is defined and go_needs_update
+
+- name: Ensure /usr/local/go/bin is in the PATH environment variable
+  lineinfile:
+    path: ~/.bashrc
+    line: 'export PATH=$PATH:/usr/local/go/bin'
+    state: present
+  become: no
 
 - name: Install Go tools
   shell: go install -v {{ item.value }}
   environment:
-    GOBIN: "/usr/local/go/bin"  # Modify this if you want the binary to be installed elsewhere
+    GOBIN: "/usr/local/go/bin"
   with_dict:
     subfinder: "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
     assetfinder: "github.com/tomnomnom/assetfinder@latest"
@@ -58,10 +53,3 @@
     naabu: "github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"
     nuclei: "github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
     cent: "github.com/xm1k3/cent@latest"
-
-- name: Ensure GOBIN is in the PATH
-  lineinfile:
-    path: ~/.bashrc
-    line: 'export PATH=$PATH:/usr/local/go/bin'
-    state: present
-  become: no
