@@ -60,9 +60,9 @@
   command:
     cmd: "go install -v {{ item }}"
   # environment:
-  #   PATH: "{{ ansible_env.PATH }}:{{ go_bin_dir }}"
-  #   GOPATH: "{{ user_gopath }}"
-  #   GOBIN: "{{ user_gopath }}/bin"
-  #   GO111MODULE: "on"
+    PATH: "{{ ansible_env.PATH }}:{{ go_bin_dir }}"
+    GOPATH: "{{ go_install_dir }}"
+    GOBIN: "{{ go_install_dir }}/bin"
+    GO111MODULE: "on"
   loop: "{{ go_repositories }}"
   become: false
