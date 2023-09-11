@@ -3,11 +3,35 @@
   hosts: localhost
   tasks:
     - name: "Ensure Go is installed"
-      package:
-        name: golang
-        state: present
+      shell: |
+        if ! command -v go &>/dev/null; then
+          sudo apt install golang-go -y
+        else
+          echo "Go is already installed"
+        fi
+      args:
+        executable: /bin/bash
+      register: go_installation_result
+      changed_when: "'Go is already installed' not in go_installation_result.stdout"
+      tags: install
 
-    - name: "Install Go tool"
+    - name: "Update Go"
+      shell: |
+        cd ~/Tools/
+        if [ ! -d update-golang ]; then
+          git clone https://github.com/udhos/update-golang
+          cd update-golang
+          sudo ./update-golang.sh
+        else
+          echo "update-golang folder already exists"
+        fi
+      args:
+        executable: /bin/bash
+      register: go_update_result
+      changed_when: "'update-golang folder already exists' not in go_update_result.stdout"
+      tags: update
+
+    - name: "Install Go tools"
       shell: "GO111MODULE=on go get -v {{ item.value }}"
       environment:
         GOPATH: "/usr/local/go/bin/"  # Adjust to your GOPATH if necessary
@@ -27,4 +51,3 @@
         naabu: "github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"
         nuclei: "github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
         cent: "github.com/xm1k3/cent@latest"
-

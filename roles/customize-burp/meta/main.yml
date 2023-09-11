@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  role_name: burp_suite
+  author: kluo
+  description: Install Burp Suite for Linux
+  license: MIT
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions: 20.04
+        - focal
+  galaxy_tags:
+    - security
+    - web
+
+dependencies: []

@@ -1,0 +1,11 @@
+---
+
+- name: Download OWASP ZAP installer
+  ansible.builtin.get_url:
+    url: "https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2_13_0_unix.sh"
+    dest: "/tmp/ZAP_2_13_0_unix.sh"
+    mode: '0640'
+
+- name: "Executing bash script to install ZAP"
+  shell:
+    /tmp/ZAP_2_13_0_unix.sh

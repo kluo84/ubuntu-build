@@ -1,13 +1,16 @@
 ---
-- name: "Customizing Parrot"
+- name: "Customizing Ubuntu"
   hosts: localhost
   connection: local
   roles:
     - role: "roles/install-tools"
     - role: "roles/configure-tmux"
+    - role: "roles/customize-zap"
+    - role: "roles/customize-postman"
     - role: "roles/customize-terminal"
     - role: "roles/customize-browser"
     - role: "roles/configure-logging"
+    - role: "roles/configure-burp"
     - role: gantsign.visual-studio-code
       users:
         - username: "{{ ansible_user_id }}" 
