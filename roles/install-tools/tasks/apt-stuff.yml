@@ -19,8 +19,9 @@
       - exiftool
       - libpcap-dev
       - default-jre
-      - python3
+      - python3.9-full
       - git
+      - python3-pip
     state: latest
   become: true
   become_method: sudo
