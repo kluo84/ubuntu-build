@@ -3,8 +3,6 @@
   ansible.builtin.file:
     path: "{{ burpsuite_extras_dir }}"
     state: directory
-    owner: "{{ burpsuite_user }}"
-    group: "{{ burpsuite_user_details.group }}"
     mode: '0755'
 
 - name: Download jar files
@@ -16,6 +14,8 @@
     group: "{{ burpsuite_user_details.group }}"
     mode: '0640'
   loop: "{{ lookup('dict', burpsuite_extras_jars) }}"
+  become: true
+  become_method: sudo
 
 - name: Copy autoburp.py script to extras directory
   ansible.builtin.copy:
@@ -24,3 +24,5 @@
     owner: "{{ burpsuite_user }}"
     group: "{{ burpsuite_user_details.group }}"
     mode: '0644'
+  become: true
+  become_method: sudo
