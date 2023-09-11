@@ -58,11 +58,6 @@
 
 - name: Install Go Repositories
   command:
-    cmd: "go install -v {{ item }}"
-  # environment:
-    PATH: "{{ ansible_env.PATH }}:{{ go_bin_dir }}"
-    GOPATH: "{{ go_install_dir }}"
-    GOBIN: "{{ go_install_dir }}/bin"
-    GO111MODULE: "on"
+    cmd: "{{ go_install_dir }}/bin/go install -v {{ item }}"
   loop: "{{ go_repositories }}"
   become: false
