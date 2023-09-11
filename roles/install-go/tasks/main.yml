@@ -28,25 +28,28 @@
   become: true
   become_method: sudo
 
-- name: Add GOBIN to .bashrc
+- name: Add GOBIN to PATH in .bashrc
   lineinfile:
     path: "/home/{{ current_user.stdout }}/.bashrc"
-    line: 'export GOBIN={{ user_gopath }}/bin'
+    line: 'export PATH=$PATH:{{ user_gopath }}/bin'
     state: present
 
 - name: Source .bashrc to update environment variables
   shell: source /home/{{ current_user.stdout }}/.bashrc
   args:
     executable: /bin/bash
+  
+- name: Debug go_check
+  debug:
+    var: go_check.stat.exists
 
 - name: Install Go Repositories
   command:
-    cmd: "go install {{ item }}"
-  environment:
-    PATH: "{{ ansible_env.PATH }}:{{ go_bin_dir }}"
-    GOPATH: "{{ user_gopath }}"
-    GOBIN: "{{ user_gopath }}/bin"
-    GO111MODULE: "on"
+    cmd: "go install -v {{ item }}"
+  # environment:
+  #   PATH: "{{ ansible_env.PATH }}:{{ go_bin_dir }}"
+  #   GOPATH: "{{ user_gopath }}"
+  #   GOBIN: "{{ user_gopath }}/bin"
+  #   GO111MODULE: "on"
   loop: "{{ go_repositories }}"
   become: false
-  when: not go_check.stat.exists
