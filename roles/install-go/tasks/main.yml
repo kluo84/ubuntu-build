@@ -40,6 +40,7 @@
   command:
     cmd: "go install {{ item }}"
   environment:
+    PATH: "{{ ansible_env.PATH }}:{{ go_bin_dir }}"
     GOPATH: "{{ user_gopath }}"
     GOBIN: "{{ user_gopath }}/bin"
     GO111MODULE: "on"
