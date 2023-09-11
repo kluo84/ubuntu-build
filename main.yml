@@ -3,6 +3,7 @@
   hosts: localhost
   connection: local
   roles:
+    - role: "roles/install-go"
     - role: "roles/install-tools"
     - role: "roles/configure-tmux"
     - role: "roles/customize-terminal"
