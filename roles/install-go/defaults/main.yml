@@ -1,2 +1,5 @@
----
-# defaults file for install-go
+# Go installation details
+go_tarball_url: "https://dl.google.com/go/go1.21.1.linux-amd64.tar.gz"
+go_tarball_dest: "/tmp/go1.21.1.linux-amd64.tar.gz"
+go_install_dir: "/usr/local"
+go_bin_dir: "{{ go_install_dir }}/go/bin"

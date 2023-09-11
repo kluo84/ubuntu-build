@@ -8,31 +8,23 @@
   set_fact:
     user_gopath: "/home/{{ current_user.stdout }}/go"
 
-- name: Check if Go is installed
-  command: go version
-  ignore_errors: true
-  register: go_version_result
+- name: Check if Go is already installed in /usr/local/go
+  stat:
+    path: "{{ go_install_dir }}/go"
+  register: go_check
 
-- name: Determine if Go version is less than 1.17 or Go is not installed
-  set_fact:
-    install_go: true
-  when: 
-    - go_version_result.rc != 0
-    - "'go1.16' in go_version_result.stdout or 'go1.15' in go_version_result.stdout or 'go1.14' in go_version_result.stdout"
-
-- name: Remove old Go version
-  command: sudo rm -rf /usr/local/go
-  when: install_go is defined and install_go
-
-- name: Download Go
+- name: Download Go if not installed
   ansible.builtin.get_url:
-    url: "{{ go_url }}"
-    dest: "/tmp/go1.21.1.linux-amd64.tar.gz"
-  when: install_go is defined and install_go
+    url: "{{ go_tarball_url }}"
+    dest: "{{ go_tarball_dest }}"
+  when: not go_check.stat.exists
 
-- name: Install Go
-  shell: tar -C {{ go_install_dir }} -xzf /tmp/go1.21.1.linux-amd64.tar.gz
-  when: install_go is defined and install_go
+- name: Extract and install Go if not installed
+  unarchive:
+    src: "{{ go_tarball_dest }}"
+    dest: "{{ go_install_dir }}"
+    remote_src: true
+  when: not go_check.stat.exists
   become: true
   become_method: sudo
 
@@ -41,14 +33,16 @@
     path: /etc/profile
     line: 'export PATH=$PATH:{{ go_bin_dir }}'
     state: present
-  when: install_go is defined and install_go
   become: true
   become_method: sudo
 
-- name: Install Go tools
-  command: "go install -v {{ item }}"
-  loop: "{{ tools }}"
+- name: Install Go Repositories
+  command:
+    cmd: "go install {{ item }}"
   environment:
     GOPATH: "{{ user_gopath }}"
-  become: false  # Ensure the go tools are installed for the user
-  tags: tools
+    GOBIN: "{{ user_gopath }}/bin"
+    GO111MODULE: "on"
+  loop: "{{ go_repositories }}"
+  become: false
+  when: not go_check.stat.exists

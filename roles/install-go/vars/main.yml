@@ -1,9 +1,6 @@
 ---
 # vars file for install-tools
-go_url: "https://go.dev/dl/go1.21.1.linux-amd64.tar.gz"
-go_install_dir: "/usr/local"
-go_bin_dir: "/usr/local/go/bin"
-tools:
+go_repositories:
   - "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
   - "github.com/tomnomnom/assetfinder@latest"
   - "github.com/OWASP/Amass/v3/...@master"
