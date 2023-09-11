@@ -30,7 +30,7 @@
   tags: update
 
 - name: "Install Go tools"
-  shell: "GO111MODULE=on go install {{ item.value }}"
+  shell: "GO111MODULE=on go install {{ item.value.split('@')[0] }}@{{ item.value.split('@')[1] }}"
   environment:
     GOPATH: "/usr/local/go"           # Adjust to your GOPATH if necessary
     GOBIN: "/usr/local/go/bin"        # This ensures the installed tools will be placed here
