@@ -28,13 +28,16 @@
   become: true
   become_method: sudo
 
-- name: Set PATH for Go
+- name: Add GOBIN to .bashrc
   lineinfile:
-    path: /etc/profile
-    line: 'export PATH=$PATH:{{ go_bin_dir }}'
+    path: "/home/{{ current_user.stdout }}/.bashrc"
+    line: 'export GOBIN={{ user_gopath }}/bin'
     state: present
-  become: true
-  become_method: sudo
+
+- name: Source .bashrc to update environment variables
+  shell: source /home/{{ current_user.stdout }}/.bashrc
+  args:
+    executable: /bin/bash
 
 - name: Install Go Repositories
   command:
