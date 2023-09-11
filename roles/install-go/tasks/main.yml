@@ -31,7 +31,7 @@
 - name: Add GOBIN to PATH in .bashrc
   lineinfile:
     path: "/home/{{ current_user.stdout }}/.bashrc"
-    line: 'export PATH=$PATH:{{ user_gopath }}/bin'
+    line: 'export PATH=$PATH:{{ go_install_dir }}/go/bin:{{ user_gopath }}/bin'
     state: present
 
 - name: Source .bashrc to update environment variables
