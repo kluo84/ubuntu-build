@@ -1,11 +1,21 @@
 ---
+- name: Check if OWASP ZAP is already installed
+  stat:
+    path: /usr/local/bin/zap.sh
+  register: zap_installed
 
 - name: Download OWASP ZAP installer
   ansible.builtin.get_url:
     url: "https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2_13_0_unix.sh"
     dest: "/tmp/ZAP_2_13_0_unix.sh"
-    mode: '0640'
+    mode: '0755'   # Modified to make it executable
+  when: not zap_installed.stat.exists
 
-- name: "Executing bash script to install ZAP"
-  shell:
-    /tmp/ZAP_2_13_0_unix.sh
+- name: Install ZAP
+  command: /tmp/ZAP_2_13_0_unix.sh
+  args:
+    creates: /usr/local/   # This ensures the command is not run if the file/directory already exists
+  when: not zap_installed.stat.exists
+  become: true
+  become_method: sudo
+
