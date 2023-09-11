@@ -33,8 +33,6 @@
 - name: Install Go
   shell: tar -C {{ go_install_dir }} -xzf /tmp/go1.21.1.linux-amd64.tar.gz
   when: install_go is defined and install_go
-  become: true
-  become_method: sudo
 
 - name: Set PATH for Go
   lineinfile:
