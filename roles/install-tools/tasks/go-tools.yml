@@ -14,8 +14,10 @@
     - "'go1.16' in go_version_result.stdout or 'go1.15' in go_version_result.stdout or 'go1.14' in go_version_result.stdout"
 
 - name: Remove old Go version
-  command: sudo rm -rf /usr/local/go
+  command: rm -rf /usr/local/go
   when: go_needs_update is defined and go_needs_update
+  become: true
+  become_method: sudo
 
 - name: Download and Install Go from official source
   block:
@@ -25,6 +27,8 @@
         mode: '0755'
     - shell: sudo tar -C /usr/local -xzf /tmp/go1.21.1.linux-amd64.tar.gz
   when: go_needs_update is defined and go_needs_update
+  become: true
+  become_method: sudo
 
 - name: Ensure /usr/local/go/bin is in the PATH environment variable
   lineinfile:
