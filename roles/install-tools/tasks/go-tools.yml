@@ -12,8 +12,6 @@
   register: go_installation_result
   changed_when: "'Go is already installed' not in go_installation_result.stdout"
   tags: install
-  become: true
-  become_method: sudo
 
 - name: "Update Go"
   shell: |
@@ -30,13 +28,12 @@
   register: go_update_result
   changed_when: "'update-golang folder already exists' not in go_update_result.stdout"
   tags: update
-  become: true
-  become_method: sudo
 
 - name: "Install Go tools"
-  shell: "GO111MODULE=on go get -v {{ item.value }}"
+  shell: "GO111MODULE=on go install {{ item.value }}"
   environment:
-    GOPATH: "/usr/local/go/bin/"  # Adjust to your GOPATH if necessary
+    GOPATH: "/usr/local/go"           # Adjust to your GOPATH if necessary
+    GOBIN: "/usr/local/go/bin"        # This ensures the installed tools will be placed here
   with_dict:
     subfinder: "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
     assetfinder: "github.com/tomnomnom/assetfinder@latest"
@@ -53,4 +50,3 @@
     naabu: "github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"
     nuclei: "github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
     cent: "github.com/xm1k3/cent@latest"
-  
