@@ -34,11 +34,24 @@
     line: 'export PATH=$PATH:{{ go_install_dir }}/go/bin:{{ user_gopath }}/bin'
     state: present
 
+- name: Debug .bashrc content
+  command: cat /home/{{ current_user.stdout }}/.bashrc
+  register: bashrc_content
+
+- debug:
+    var: bashrc_content.stdout_lines
+
 - name: Source .bashrc to update environment variables
-  shell: source /home/{{ current_user.stdout }}/.bashrc
+  shell: |
+    source /home/{{ current_user.stdout }}/.bashrc
+    echo $PATH
   args:
     executable: /bin/bash
-  
+  register: sourced_output
+
+- debug:
+    var: sourced_output.stdout
+
 - name: Debug go_check
   debug:
     var: go_check.stat.exists
