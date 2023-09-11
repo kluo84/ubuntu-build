@@ -46,8 +46,8 @@
   become_method: sudo
 
 - name: Install Go tools
-  command: "go install -v {{ item.value }}"
-  loop: "{{ tools|dict2items }}"
+  command: "go install -v {{ item }}"
+  loop: "{{ tools }}"
   environment:
     GOPATH: "{{ user_gopath }}"
   become: false  # Ensure the go tools are installed for the user
