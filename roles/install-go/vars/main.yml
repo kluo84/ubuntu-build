@@ -1,0 +1,21 @@
+---
+# vars file for install-tools
+go_url: "https://go.dev/dl/go1.21.1.linux-amd64.tar.gz"
+go_install_dir: "/usr/local"
+go_bin_dir: "/usr/local/go/bin"
+tools:
+  subfinder: "github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
+  assetfinder: "github.com/tomnomnom/assetfinder@latest"
+  amass: "github.com/OWASP/Amass/v3/...@master"
+  anew: "github.com/tomnomnom/anew@latest"
+  httpx: "github.com/projectdiscovery/httpx/cmd/httpx@latest"
+  katana: "github.com/projectdiscovery/katana/cmd/katana@latest"
+  gf: "github.com/tomnomnom/gf@latest"
+  gau: "github.com/lc/gau/v2/cmd/gau@latest"
+  qsreplace: "github.com/tomnomnom/qsreplace@latest"
+  jsubfinder: "github.com/ThreatUnkown/jsubfinder@latest"
+  dalfox: "github.com/hahwul/dalfox/v2@latest"
+  ffuf: "github.com/ffuf/ffuf@latest"
+  naabu: "github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"
+  nuclei: "github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
+  cent: "github.com/xm1k3/cent@latest"
