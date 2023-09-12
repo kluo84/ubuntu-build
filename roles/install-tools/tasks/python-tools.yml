@@ -1,10 +1,16 @@
 ---
-- name: "Install pipx tools"
-  community.general.pipx:
-    name: "{{ item.name }}"
-    source: "{{ item.url }}"
-    state: latest
+- name: Clone git repositories
+  git:
+    repo: "{{ item.url }}"
+    dest: "/tmp/{{ item.name }}"
+    force: yes  # This ensures that any local changes are overwritten
   loop:
-    - { name: 'impacket', url: 'git+https://github.com/fortra/impacket.git' }
-    - { name: 'crackmapexec', url: 'git+https://github.com/Porchetta-Industries/CrackMapExec.git' }
-    - { name: 'certipy-ad', url: 'git+https://github.com/ly4k/Certipy.git' }
+    - { name: 'impacket', url: 'https://github.com/fortra/impacket.git' }
+    - { name: 'crackmapexec', url: 'https://github.com/Porchetta-Industries/CrackMapExec.git' }
+
+- name: Install pipx tools from local directory
+  command:
+    cmd: "pipx install /tmp/{{ item.name }}"
+  loop:
+    - { name: 'impacket', url: 'https://github.com/fortra/impacket.git' }
+    - { name: 'crackmapexec', url: 'https://github.com/Porchetta-Industries/CrackMapExec.git' }

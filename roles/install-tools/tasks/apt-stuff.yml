@@ -4,10 +4,10 @@
   become: true
   become_method: sudo
 
-- name: "Upgrade all packages"
-  apt: upgrade=yes force_apt_get=yes
-  become: true
-  become_method: sudo
+# - name: "Upgrade all packages"
+#   apt: upgrade=yes force_apt_get=yes
+#   become: true
+#   become_method: sudo
   
 - name: "Installing Packages"
   package:
