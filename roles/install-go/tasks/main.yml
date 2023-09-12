@@ -43,4 +43,3 @@
     GO111MODULE: "on"
   loop: "{{ go_repositories }}"
   become: false
-  when: not go_check.stat.exists
