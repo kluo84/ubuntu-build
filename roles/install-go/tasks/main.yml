@@ -28,36 +28,19 @@
   become: true
   become_method: sudo
 
-- name: Add GOBIN to PATH in .bashrc
-  lineinfile:
-    path: "/home/{{ current_user.stdout }}/.bashrc"
-    line: 'export PATH=$PATH:{{ go_install_dir }}/go/bin:{{ user_gopath }}/bin'
-    state: present
-
-- name: Debug .bashrc content
-  command: cat /home/{{ current_user.stdout }}/.bashrc
-  register: bashrc_content
-
-- debug:
-    var: bashrc_content.stdout_lines
-
-- name: Source .bashrc to update environment variables
-  shell: |
-    source /home/{{ current_user.stdout }}/.bashrc
-    echo $PATH
-  args:
-    executable: /bin/bash
-  register: sourced_output
-
-- debug:
-    var: sourced_output.stdout
-
-- name: Debug go_check
-  debug:
-    var: go_check.stat.exists
+# - name: Add GOBIN to PATH in .bashrc
+#   lineinfile:
+#     path: "/home/{{ current_user.stdout }}/.bashrc"
+#     line: 'export PATH=$PATH:{{ go_bin_dir }}:{{ user_gopath }}/bin'
+#     state: present
 
 - name: Install Go Repositories
   command:
-    cmd: "{{ go_install_dir }}/bin/go install -v {{ item }}"
+    cmd: "{{ go_bin_dir }}/go install -v {{ item }}"
+  environment:
+    GOPATH: "{{ go_bin_dir }}"
+    GOBIN: "{{ user_gopath }}/bin"
+    GO111MODULE: "on"
   loop: "{{ go_repositories }}"
   become: false
+  when: not go_check.stat.exists
