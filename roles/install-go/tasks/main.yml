@@ -36,7 +36,7 @@
 
 - name: Install Go Repositories
   command:
-    cmd: "{{ go_bin_dir }}/go install -v {{ item }}"
+    cmd: "go install -v {{ item }}"
   environment:
     GOPATH: "{{ go_bin_dir }}"
     GOBIN: "{{ user_gopath }}/bin"
